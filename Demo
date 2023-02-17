@@ -1,0 +1,15 @@
+sh 'docker exec -itd sipp sipp -sn uac -s gopi -r 20 -d 10000 -rp 5060 $(hostname -I | cut -d " " -f 1) -trace_stat -timeout 30s'        
+sh 'sleep 10'        
+sh '''        
+#! /bin/bash/        
+mkdir -p /home/ubuntu/LOGS/        
+for i in $(docker exec sipp sh -c "ls *.csv")        
+do        
+#echo $i        
+docker cp sipp:/$i /home/ubuntu/LOGS/ 2>/dev/null        
+done 
+'''               
+sh '''        
+#!/bin/bash        
+docker logs kamailio > /home/ubuntu/LOGS/kamailio.logs        
+'''
