@@ -1,5 +1,5 @@
-sh 'docker exec -itd sipp sipp -sn uac -s gopi -r 20 -d 10000 -rp 5060 $(hostname -I | cut -d " " -f 1) -trace_stat -timeout 30s'        
-sh 'sleep 10'        
+sudo docker exec -itd sipp sipp -sn uac -s gopi -r 20 -d 10000 -rp 5060 $(hostname -I | cut -d " " -f 1) -trace_stat -timeout 30s
+sleep 10
 sh '''        
 #! /bin/bash/        
 mkdir -p /home/ubuntu/LOGS/        
