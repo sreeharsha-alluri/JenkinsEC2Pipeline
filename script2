@@ -1,4 +1,6 @@
 #!/bin/bash
+sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > small_Instance-sipp_$(date +%H:%M:%S).logs
+sudo docker logs kamailio > small_Instance-kamailio_$(date +%H:%M:%S).logs
 sudo aws configure set aws_access_key_id 'AKIAZYQWCKRC7A2WEO4X'
 sudo aws configure set aws_secret_access_key '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'
 sudo aws configure set default.region 'ap-northeast-1'
