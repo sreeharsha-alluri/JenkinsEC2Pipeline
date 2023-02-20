@@ -7,12 +7,12 @@ sudo snap install aws-cli --classic
 sudo docker run -itd -p 5060:5060/udp -p 5060:5060/tcp -p 5061:5061/tcp --name kamailio --network host sreeharsha235/kamailio:v1.0
 sudo docker run -itd --name sipp -p 5061:5061 -p 5060:5060 --network host pavan176/sipp:v3.7.0
 sudo docker exec -d sipp sipp -sn uas -rsa localhost:5060
-sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa \$(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > sipp_\$(date +%H:%M:%S).logs
-sudo docker logs kamailio > kamailio_\$(date +%H:%M:%S).logs
+sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > sipp_$(date +%H:%M:%S).logs
+sudo docker logs kamailio > kamailio_$(date +%H:%M:%S).logs
 sudo aws configure set aws_access_key_id 'AKIAZYQWCKRC7A2WEO4X'
 sudo aws configure set aws_secret_access_key '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'
 sudo aws configure set default.region $AWS_DEFAULT_REGION
-sudo aws ec2 wait instance-status-ok --instance-ids \${instanceId}
+sudo aws ec2 wait instance-status-ok --instance-ids ${instanceId}
 sudo aws s3 cp /home/ubuntu/sipp* s3://kamailio-report-12456087hh/logs/
 sudo aws s3 cp /home/ubuntu/kamailio* s3://kamailio-report-12456087hh/logs/
 sudo aws ec2 terminate-instances --instance-ids ${instanceId}
