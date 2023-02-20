@@ -1,0 +1,6 @@
+#!/bin/bash
+sudo aws configure set aws_access_key_id 'AKIAZYQWCKRC7A2WEO4X'
+sudo aws configure set aws_secret_access_key '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'
+sudo aws configure set default.region 'ap-northeast-1'
+sudo aws s3 cp /home/ubuntu/small_Instance-sipp* s3://kamailio-report-12456087hh/logs/
+sudo aws s3 cp /home/ubuntu/small_Instance-kamailio* s3://kamailio-report-12456087hh/logs/
