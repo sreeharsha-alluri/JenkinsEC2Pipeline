@@ -9,8 +9,8 @@ sudo docker run -itd --name sipp -p 5061:5061 -p 5060:5060 --network host pavan1
 sudo docker exec -d sipp sipp -sn uas -rsa localhost:5060
 sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > sipp_$(date +%H:%M:%S).logs
 sudo docker logs kamailio > kamailio_$(date +%H:%M:%S).logs
-sudo aws configure set aws_access_key_id 'AKIAZYQWCKRC6AEOR674'
-sudo aws configure set aws_secret_access_key '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'
+sudo aws configure set aws_access_key_id 'Enter the access key '
+sudo aws configure set aws_secret_access_key 'Enter the secret key '
 sudo aws configure set default.region $AWS_DEFAULT_REGION
 sudo aws ec2 wait instance-status-ok --instance-ids ${instanceId}
 sudo aws s3 cp /home/ubuntu/sipp* s3://kamailio-report-12456087hh/logs/
