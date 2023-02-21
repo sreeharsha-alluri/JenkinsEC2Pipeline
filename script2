@@ -5,6 +5,6 @@ sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname
 sudo docker logs kamailio > small_Instance-kamailio_$(date +%H:%M:%S).logs
 sudo aws configure set aws_access_key_id 'AKIAQ74MVEHH5Z4TEYDX'
 sudo aws configure set aws_secret_access_key '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'
-sudo aws configure set default.region 'us-west-2'
+sudo aws configure set default.region 'ap-northeast-1'
 sudo aws s3 cp /home/ubuntu/small_Instance-sipp* s3://kamailio-bucket/logs/
 sudo aws s3 cp /home/ubuntu/small_Instance-kamailio* s3://kamailio-bucket/logs/
