@@ -3,8 +3,8 @@ sudo docker run -itd --name sipp -p 5061:5061 -p 5060:5060 --network host pavan1
 sudo docker exec -d sipp sipp -sn uas -rsa localhost:5060
 sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > small_Instance-sipp_$(date +%H:%M:%S).logs
 sudo docker logs kamailio > small_Instance-kamailio_$(date +%H:%M:%S).logs
-sudo aws configure set aws_access_key_id 'AKIAZYQWCKRCVW7WTANC'
-sudo aws configure set aws_secret_access_key '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'
-sudo aws configure set default.region 'ap-northeast-1'
+sudo aws configure set aws_access_key_id 'AKIAQ74MVEHH5Z4TEYDX'
+sudo aws configure set aws_secret_access_key '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'
+sudo aws configure set default.region 'us-west-2'
 sudo aws s3 cp /home/ubuntu/small_Instance-sipp* s3://kamailio-report-12456087hh/logs/
 sudo aws s3 cp /home/ubuntu/small_Instance-kamailio* s3://kamailio-report-12456087hh/logs/
