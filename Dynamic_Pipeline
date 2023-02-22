@@ -1,0 +1,107 @@
+pipeline {
+  agent any
+    parameters {
+        choice(name: 'validate', choices: ['t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge'], description: 'Choose the validate level')
+        string(name: 'service', defaultValue: 'IMS', description: 'Service')
+        choice(name: 'cloud', choices: ['Azure', 'Aws'], description: 'Cloud provider')
+        string(name: 'form_factor', defaultValue: 'CNF', description: 'Form factor')
+    }
+   environment {
+        AWS_DEFAULT_REGION = 'us-east-1'
+        // AWS_ACCESS_KEY_ID = credentials('AKIAZYQWCKRC6AEOR674')
+        // AWS_SECRET_ACCESS_KEY = credentials('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')
+        // INSTANCE_TYPE = 't2.small'
+        AMI_ID = 'ami-09cd747c78a9add63' // Ubuntu 20.04 LTS
+        KEY_PAIR_NAME = 'test2'
+        SECURITY_GROUP_NAME = 'launch-wizard-3'
+        DOCKER_IMAGE = 'kgopi424/kamailio'
+        // DOCKER_USERNAME = credentials('docker-username')
+        // DOCKER_PASSWORD = credentials('docker-password')
+    }
+  stages {
+      stage('Clone Kamailio Repo'){
+            steps{
+                node('slave1'){
+                    sh "rm -rf *"
+                    sh "rm -rf .git"
+                    sh "git clone https://github.com/DaggupatiPavan/kamailio.git ./"
+                    // sh "sudo sed -i 's/-1.0/-1.${BUILD_NUMBER}/g' /home/ubuntu/jenkins/workspace/${env.JOB_NAME}/Test.yaml"
+                    sh 'pwd'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                node('slave1') {
+                    script{
+                        if(params.cloud == "Aws" && params.form_factor == "CNF" && params.service == "IMS"){
+                            sh "kubectl delete pod kaniko"
+                            sh "docker tag kgopi424/kamailio:latest kgopi424/kamailio:v1.\$((${BUILD_NUMBER} -1))"
+                            sh "docker push kgopi424/kamailio:v1.\$((${BUILD_NUMBER} -1))"
+                            sh "docker rmi -f kgopi424/kamailio:v1.\$((${BUILD_NUMBER} -2))"
+                            sh "kubectl apply -f /home/ubuntu/jenkins/workspace/${env.JOB_NAME}/Test.yaml"
+                            sh 'sleep 200'
+                        }
+                        else{
+                            echo "unable to build this is not Azure cloud"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Vulnerability scanning'){
+            steps{
+                node('slave1'){
+                    sh "docker pull kgopi424/kamailio"
+                    sh "grype kgopi424/kamailio"
+                }
+            }
+        }
+    stage('Creating Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+       when {
+            expression {params.cloud == 'Aws'}
+        }
+      steps {
+        script {
+          def instanceId = sh(script: """
+            aws ec2 run-instances \\
+              --image-id ${AMI_ID} \\
+              --instance-type ${params.validate} \\
+              --key-name ${KEY_PAIR_NAME} \\
+              --security-groups ${SECURITY_GROUP_NAME} \\
+              --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=${params.validate}-Instance-${BUILD_NUMBER}}]' \\
+              --query 'Instances[0].InstanceId' \\
+              --output text
+          """.trim(), returnStdout: true).trim()
+          echo "Created EC2 instance: ${instanceId}"
+          sh 'sleep 60'
+          // Wait for the instance to be running
+          sh "aws ec2 wait instance-running --instance-ids ${instanceId}"
+
+          // Connect to the instance via SSH
+          def sshUser = 'ubuntu'
+          def publicIp = sh(script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text", returnStdout: true).trim()
+        //   def sshKeyFile = '/var/lib/jenkins/test.pem'
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', scretKeyVariable: 'AWS_SECRET_ACCESS_KEY',credentialsId: 'AWS-Cred']]) {
+          sh """
+            sudo ssh -i ~/test2.pem  -o StrictHostKeyChecking=no  ubuntu@${publicIp} '
+            git clone https://github.com/sreeharsha-alluri/JenkinsEC2Pipeline.git
+            sudo bash JenkinsEC2Pipeline/script1
+            sudo docker run -itd -p 5060:5060/udp -p 5060:5060/tcp -p 5061:5061/tcp --name kamailio --network host ${DOCKER_IMAGE}
+            sudo aws configure set aws_access_key_id '\${AWS_ACCESS_KEY_ID}'
+            sudo aws configure set aws_secret_access_key '\${AWS_SECRET_ACCESS_KEY}'
+            sudo bash JenkinsEC2Pipeline/script2
+            sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa \$(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > ${params.validate}_Instance-sipp_\$(date +%H:%M:%S).logs
+            sudo docker logs kamailio > ${params.validate}_Instance-kamailio_\$(date +%H:%M:%S).logs
+            sleep 15
+            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-sipp* s3://kamailio-bucket-new/logs/
+            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-kamailio* s3://kamailio-bucket-new/logs/
+            sudo aws ec2 terminate-instances --instance-ids ${instanceId}
+            '
+            """
+        }
+        }
+      }
+    }
+  }
+}
