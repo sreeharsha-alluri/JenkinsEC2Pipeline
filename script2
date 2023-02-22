@@ -4,5 +4,5 @@ sudo docker exec -d sipp sipp -sn uas -rsa localhost:5060
 sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa $(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > small_Instance-sipp_$(date +%H:%M:%S).logs
 sudo docker logs kamailio > small_Instance-kamailio_$(date +%H:%M:%S).logs
 aws configure set default.region 'us-east-1'
-aws s3 cp /home/ubuntu/small_Instance-sipp* s3://kamailio-bucket/logs/
-aws s3 cp /home/ubuntu/small_Instance-kamailio* s3://kamailio-bucket/logs/
+aws s3 cp /home/ubuntu/small_Instance-sipp* s3://kamailio-bucket-new/logs/
+aws s3 cp /home/ubuntu/small_Instance-kamailio* s3://kamailio-bucket-new/logs/
