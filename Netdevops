@@ -15,8 +15,11 @@ if not os.path.exists(directory):
 #   print(f"Directory '{directory}' created.")
 #http://107.22.147.222:8080/jnlpJars/jenkins-cli.jar
 
-url = f'http://{PUBLIC_IP}:8080/jnlpJars/jenkins-cli.jar'
-os.system(f"wget {url} -P {directory}")
+url= f'http://{PUBLIC_IP}:8080/jnlpJars/jenkins-cli.jar'
+filename = os.path.join(directory, os.path.basename(url))
+if not os.path.exists(filename):
+    os.system(f"wget {url} -P {directory}")
+#os.system(f"wget {url} -P {directory}")
 #print(f"File downloaded to '{directory}'.")
 # Parse input parameters
 parser = argparse.ArgumentParser()
