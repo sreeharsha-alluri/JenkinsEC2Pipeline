@@ -9,11 +9,11 @@ PUBLIC_IP = response.text.strip()
 
 # Parse input parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('--validate', required=True)
-parser.add_argument('--service', required=True)
-parser.add_argument('--cloud', required=True)
-parser.add_argument('--form_factor', required=True)
-parser.add_argument('--job', required=False)
+parser.add_argument('--validate', required=True, help='small | medium | full')
+parser.add_argument('--service', required=True, help='IMS')
+parser.add_argument('--cloud', required=True, help='Aws | Azure')
+parser.add_argument('--form_factor', required=True ,help='CNF')
+parser.add_argument('--job', required=False, help='Provide_Job_Name')
 args = parser.parse_args()
 
 auth = ('Admin', 'Admin@123')
