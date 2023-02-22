@@ -94,8 +94,8 @@ pipeline {
             sudo docker exec -i sipp sipp -sn uac -r 100 -rp 3000 -trace_msg -rsa \$(hostname -I | cut -d " " -f 1):5060 localhost:5061 -nd -timeout 20s > ${params.validate}_Instance-sipp_\$(date +%H:%M:%S).logs
             sudo docker logs kamailio > ${params.validate}_Instance-kamailio_\$(date +%H:%M:%S).logs
             sleep 15
-            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-sipp* s3://kamailio-bucket-new/logs/
-            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-kamailio* s3://kamailio-bucket-new/logs/
+            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-sipp* s3://kamailio-bucket-new/Dynamic_Logs/
+            sudo aws s3 cp /home/ubuntu/${params.validate}_Instance-kamailio* s3://kamailio-bucket-new/Dynamic_Logs/
             sudo aws ec2 terminate-instances --instance-ids ${instanceId}
             '
             """
