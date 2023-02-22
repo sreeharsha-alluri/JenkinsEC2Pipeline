@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+import requests
+import argparse
+import subprocess
+
+# Get the public IP address
+response = requests.get('https://ipv4.icanhazip.com')
+PUBLIC_IP = response.text.strip()
+
+# Parse input parameters
+parser = argparse.ArgumentParser()
+parser.add_argument('--validate', required=True)
+parser.add_argument('--service', required=True)
+parser.add_argument('--cloud', required=True)
+parser.add_argument('--form_factor', required=True)
+parser.add_argument('--job', required=False)
+args = parser.parse_args()
+
+auth = ('Admin', 'Admin@123')
+
+if args.job is None:
+    jenkins_url = f'http://{PUBLIC_IP}:8080'
+    response = requests.get(f"{jenkins_url}/api/json?tree=jobs[name]", auth=auth)
+    jobs = response.json()["jobs"]
+
+    # Print the list of jobs
+    for job in jobs:
+        print(job["name"])
+    exit(1)
+
+# Validate input parameters
+if args.validate not in ['full', 'small', 'medium']:
+    print("Invalid value for parameter validate: {}".format(args.validate))
+    print("Accepted values are: full, small, or medium")
+    exit(1)
+
+if args.cloud not in ['Aws', 'Azure']:
+    print("Invalid value for parameter cloud: {}".format(args.cloud))
+    print("Accepted values are: Aws or Azure")
+    exit(1)
+
+if args.service != 'IMS':
+    print("Invalid value for parameter service: {}".format(args.service))
+    print("Accepted values are: IMS")
+    exit(1)
+
+if args.form_factor != 'CNF':
+    print("Invalid value for parameter form_factor: {}".format(args.form_factor))
+    print("Accepted values are: CNF")
+    exit(1)
+
+# Execute the Jenkins CLI commands with the provided IP and parameters
+command1 = [
+    'java', '-jar', '/home/ubuntu/jenkins/jenkins-cli.jar',
+    '-s', 'http://{}:8080'.format(PUBLIC_IP),
+    '-auth', 'Admin:Admin@123',
+    'build', args.job,
+    '-p', 'validate={}'.format(args.validate),
+    '-p', 'service={}'.format(args.service),
+    '-p', 'cloud={}'.format(args.cloud),
+    '-p', 'form_factor={}'.format(args.form_factor)
+]
+
+command2 = [
+    'java', '-jar', '/home/ubuntu/jenkins/jenkins-cli.jar',
+    '-s', 'http://{}:8080'.format(PUBLIC_IP),
+    '-auth', 'Admin:Admin@123',
+    'console', args.job
+]
+
+subprocess.run(command1)
+subprocess.run(command2)
