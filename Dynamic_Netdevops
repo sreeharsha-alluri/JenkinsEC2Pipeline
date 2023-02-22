@@ -23,7 +23,7 @@ if not os.path.exists(filename):
 #print(f"File downloaded to '{directory}'.")
 # Parse input parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('--validate', required=True, help='t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge')
+parser.add_argument('--validate', required=True, help='t2.micro|t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge')
 parser.add_argument('--service', required=True, help='IMS')
 parser.add_argument('--cloud', required=True, help='Aws | Azure')
 parser.add_argument('--form_factor', required=True ,help='CNF')
@@ -43,9 +43,9 @@ if args.job is None:
     exit(1)
 
 # Validate input parameters
-if args.validate not in ['t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge']:
+if args.validate not in ['t2.micro','t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge']:
     print("Invalid value for parameter validate: {}".format(args.validate))
-    print("Accepted values are : t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge")
+    print("Accepted values are : t2.micro | t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge")
     exit(1)
 
 if args.cloud not in ['Aws', 'Azure']:
@@ -78,7 +78,7 @@ command1 = [
 command2 = [
     'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
     '-s', 'http://{}:8080'.format(PUBLIC_IP),
-    '-auth', 'Admin:Admin@123',   
+    '-auth', 'Admin:Admin@123',
     'console', args.job
 ]
 
