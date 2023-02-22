@@ -2,11 +2,22 @@
 import requests
 import argparse
 import subprocess
+import os
+
+directory = '/home/ubuntu/JenkinS'
 
 # Get the public IP address
 response = requests.get('https://ipv4.icanhazip.com')
 PUBLIC_IP = response.text.strip()
 
+if not os.path.exists(directory):
+    os.makedirs(directory)
+#   print(f"Directory '{directory}' created.")
+#http://107.22.147.222:8080/jnlpJars/jenkins-cli.jar
+
+url = f'http://{PUBLIC_IP}:8080/jnlpJars/jenkins-cli.jar'
+os.system(f"wget {url} ")
+#print(f"File downloaded to '{directory}'.")
 # Parse input parameters
 parser = argparse.ArgumentParser()
 parser.add_argument('--validate', required=True, help='small | medium | full')
