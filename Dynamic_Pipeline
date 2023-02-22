@@ -1,7 +1,7 @@
 pipeline {
   agent any
     parameters {
-        choice(name: 'validate', choices: ['t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge'], description: 'Choose the validate level')
+        choice(name: 'validate', choices: ['t2.micro','t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge'], description: 'Choose the validate level')
         string(name: 'service', defaultValue: 'IMS', description: 'Service')
         choice(name: 'cloud', choices: ['Azure', 'Aws'], description: 'Cloud provider')
         string(name: 'form_factor', defaultValue: 'CNF', description: 'Form factor')
