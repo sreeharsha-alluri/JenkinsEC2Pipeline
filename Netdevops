@@ -62,7 +62,7 @@ if args.form_factor != 'CNF':
 
 # Execute the Jenkins CLI commands with the provided IP and parameters
 command1 = [
-    'java', '-jar', '/home/ubuntu/jenkins/jenkins-cli.jar',
+    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
     '-s', 'http://{}:8080'.format(PUBLIC_IP),
     '-auth', 'Admin:Admin@123',
     'build', args.job,
@@ -73,7 +73,7 @@ command1 = [
 ]
 
 command2 = [
-    'java', '-jar', '/home/ubuntu/jenkins/jenkins-cli.jar',
+    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
     '-s', 'http://{}:8080'.format(PUBLIC_IP),
     '-auth', 'Admin:Admin@123',
     'console', args.job
