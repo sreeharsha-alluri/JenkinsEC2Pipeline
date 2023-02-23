@@ -57,7 +57,8 @@ pipeline {
                 }
             }
         }
-    stage('Create Small Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    // stage('Create Small Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    stage('Kamailio and Sipp installation inside small instance') {
        when {
             expression {params.cloud == 'Aws' && (params.validate == 'small' || params.validate == 'full' )}
         }
@@ -103,7 +104,8 @@ pipeline {
         }
       }
     }
-    stage('Create Medium Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    // stage('Create Medium Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    stage('Kamailio and Sipp installation inside medium instance') {
        when {
             expression {params.cloud == 'Aws' && (params.validate == 'medium' || params.validate == 'full' )}
         }
