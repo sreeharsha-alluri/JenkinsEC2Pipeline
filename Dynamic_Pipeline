@@ -57,7 +57,8 @@ pipeline {
                 }
             }
         }
-    stage('Creating Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    // stage('Creating Instance, Install Docker and AWS CLI, Run Docker Container, and Terminate EC2 Instance') {
+    stage('Kamailio , Sipp installation and pushing logs to S3 bucket') {
        when {
             expression {params.cloud == 'Aws'}
         }
