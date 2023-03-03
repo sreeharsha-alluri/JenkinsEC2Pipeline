@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+import requests
+import argparse
+import subprocess
+import os
+
+directory = '/home/ubuntu/JenkinS'
+
+# Get the public IP address
+response = requests.get('https://ipv4.icanhazip.com')
+PUBLIC_IP = response.text.strip()
+
+if not os.path.exists(directory):
+    os.makedirs(directory)
+#   print(f"Directory '{directory}' created.")
+#http://107.22.147.222:8080/jnlpJars/jenkins-cli.jar
+
+url= f'http://{PUBLIC_IP}:8080/jnlpJars/jenkins-cli.jar'
+filename = os.path.join(directory, os.path.basename(url))
+if not os.path.exists(filename):
+    os.system(f"wget {url} -P {directory}")
+#os.system(f"wget {url} -P {directory}")
+#print(f"File downloaded to '{directory}'.")
+# Parse input parameters
+parser = argparse.ArgumentParser()
+parser.add_argument('--validate', required=True, help='AWS(t2.micro|t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge | m6a.large | m6.2xlarge)\n Azure(Standard_B1s | Standard_B1ms | Standard_B2s | Standard_B2ms | Standard_B4ms | Standard_B8ms)')
+parser.add_argument('--service', required=True, help='IMS')
+parser.add_argument('--cloud', required=True, help='Aws | Azure')
+parser.add_argument('--form_factor', required=True ,help='CNF | VNF')
+parser.add_argument('--job', required=False, help='Provide_Job_Name')
+args = parser.parse_args()
+
+auth = ('Admin', 'Admin@123')
+# Validate input parameters
+
+if args.validate in ['t2.micro','t2.small','t2.medium','t2.large','t2.xlarge','t2.2xlarge','m6a.large','m6.2xlarge']:
+    if args.cloud != 'Aws':
+        print("Invalid combination of parameters: validate = {} and cloud = {}".format(args.validate, args.cloud))
+        print("For AWS, the accepted values for parameter validate are: t2.micro | t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge | m6a.large | m6.2xlarge")
+        print("Example: Netdevops --validate t2.micro --cloud Aws --service IMS --form_factor CNF --job job_name")
+        exit(1)
+elif args.validate in ['Standard_B1s','Standard_B1ms','Standard_B2s','Standard_B2ms','Standard_B4ms','Standard_B8ms']:
+    if args.cloud != 'Azure':
+        print("Invalid combination of parameters: validate = {} and cloud = {}".format(args.validate, args.cloud))
+        print("For Azure, the accepted values for parameter validate are: Standard_B1s | Standard_B1ms | Standard_B2s | Standard_B2ms | Standard_B4ms | Standard_B8ms")
+        print("Example: Netdevops --validate Standard_B1s --cloud Azure --service IMS --form_factor CNF --job job_name")
+        exit(1)
+else:
+    print("Invalid value for parameter validate: {}".format(args.validate))
+    print("Accepted values for AWS are : t2.micro | t2.small | t2.medium | t2.large | t2.xlarge | t2.2xlarge | m6a.large | m6.2xlarge")
+    print("Accepted values for Azure are : Standard_B1s | Standard_B1ms | Standard_B2s | Standard_B2ms | Standard_B4ms | Standard_B8ms")
+    print("Example: Netdevops --validate t2.micro --cloud Aws --service IMS --form_factor CNF --job job_name")
+    exit(1)
+
+if args.cloud not in ['Aws', 'Azure']:
+    print("Invalid value for parameter cloud: {}".format(args.cloud))
+    print("Accepted values are: Aws or Azure")
+    exit(1)
+
+
+if args.service != 'IMS':
+    print("Invalid value for parameter service: {}".format(args.service))
+    print("Accepted values are: IMS")
+    print("Example: Netdevops --validate t2.micro --cloud Aws --service IMS --form_factor CNF --job job_name")
+    exit(1)
+
+if args.form_factor not in ['CNF', 'VNF']:
+    print("Invalid value for parameter form_factor: {}".format(args.form_factor))
+    print("Accepted values are: CNF | VNF")
+    print("Example: Netdevops --validate t2.micro --cloud Aws --service IMS --form_factor VNF --job job_name")
+    exit(1)
+
+if args.job is None:
+    jenkins_url = f'http://{PUBLIC_IP}:8080'
+    response = requests.get(f"{jenkins_url}/api/json?tree=jobs[name]", auth=auth)
+    jobs = response.json()["jobs"]
+    print("Please select the appropriate job")
+
+    # Print the list of jobs
+    for job in jobs:
+        print(job["name"])
+    exit(1)
+
+# Execute the Jenkins CLI commands with the provided IP and parameters
+command1 = [
+    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
+    '-s', 'http://{}:8080'.format(PUBLIC_IP),
+    '-auth', 'Admin:Admin@123',
+    'build', args.job,
+    '-p', 'validate={}'.format(args.validate),
+    '-p', 'service={}'.format(args.service),
+    '-p', 'cloud={}'.format(args.cloud),
+    '-p', 'form_factor={}'.format(args.form_factor)
+]
+
+command2 = [
+    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
+    '-s', 'http://{}:8080'.format(PUBLIC_IP),
+    '-auth', 'Admin:Admin@123',
+    'console', args.job
+]
+
+subprocess.run(command1)
+subprocess.run(command2)
