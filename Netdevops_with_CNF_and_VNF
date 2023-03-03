@@ -4,7 +4,7 @@ import argparse
 import subprocess
 import os
 
-directory = '/home/ubuntu/JenkinS'
+directory = '/home/ubuntu/.JenkinS'
 
 # Get the public IP address
 response = requests.get('https://ipv4.icanhazip.com')
@@ -83,7 +83,7 @@ if args.job is None:
 
 # Execute the Jenkins CLI commands with the provided IP and parameters
 command1 = [
-    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
+    'java', '-jar', '/home/ubuntu/.JenkinS/jenkins-cli.jar',
     '-s', 'http://{}:8080'.format(PUBLIC_IP),
     '-auth', 'Admin:Admin@123',
     'build', args.job,
@@ -94,7 +94,7 @@ command1 = [
 ]
 
 command2 = [
-    'java', '-jar', '/home/ubuntu/JenkinS/jenkins-cli.jar',
+    'java', '-jar', '/home/ubuntu/.JenkinS/jenkins-cli.jar',
     '-s', 'http://{}:8080'.format(PUBLIC_IP),
     '-auth', 'Admin:Admin@123',
     'console', args.job
