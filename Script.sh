@@ -1,0 +1,1 @@
+while true ; do   count=$(aws ec2 describe-images --image-ids=$1 --query "Images[*].{st:State}" |  grep -e "available" | wc -l);   if [[ $count == 1 ]] ; then      echo "Image is ready... ";      break;   fi;   printf "." ; done  
