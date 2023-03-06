@@ -1,0 +1,14 @@
+FROM ubuntu:latest
+RUN apt-get update -y
+RUN apt-get upgrade -y 
+RUN apt-get install git -y
+RUN git clone --branch 5.3 --single-branch \https://github.com/kamailio/kamailio.git kamailio
+WORKDIR kamailio
+RUN apt-get install g++ -y
+RUN apt-get install bison -y 
+RUN apt-get install flex -y
+RUN apt-get install make -y
+RUN apt-get install gcc -y
+RUN make cfg 
+RUN make all 
+RUN make install
