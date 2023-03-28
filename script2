@@ -1,4 +1,4 @@
 #!/bin/bash
 sudo docker run -itd --name sipp -p 5061:5061 -p 5060:5060 --network host pavan176/sipp:v3.7.0
-sudo docker exec -d sipp sipp -sn uas -rsa localhost:5060
+sudo docker exec -d sipp sipp -sn uas localhost:5060
 aws configure set default.region 'us-east-1'
